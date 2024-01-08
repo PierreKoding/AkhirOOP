@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Scanner;
 
+import functions.Find;
 import functions.Validation;
 
 public class Alter {
@@ -27,7 +28,7 @@ public class Alter {
 			View.ViewMenu(conn, branchID);
 			System.out.print("Input MenuID to update : ");
 			MenuID = sc.nextLine();
-			MenuAllowed = Validation.IsInBranch(conn, branchID, MenuID);
+			MenuAllowed = Validation.IsInBranch(conn, branchID);
 			if(MenuAllowed.contains(MenuID)) {
 				valid=1;
 			}
@@ -168,6 +169,68 @@ public class Alter {
 			// TODO: handle exception
 			System.out.println("error");
 		}
+	}
+	
+	public static void PesanMenu(Connection conn, String staffID, String branchID, String transactionID, String mejaID) {
+		List<String> AllowedMenu = Validation.IsInBranch(conn, branchID);
+		String pesanMenuID = null;
+		int menu;
+		List<String> MenuAkanDipesan = null;
+		do {			
+			View.ViewMenu(conn, branchID);
+			System.out.print("1. Add Menu\n2. Remove Menu\n3. Done");
+			menu = sc.nextInt();
+			if(menu==1) {
+				MenuAkanDipesan.add(pesanMenuID);
+			}
+			else if(menu == 2) {
+				String tempRemove;
+				System.out.println(MenuAkanDipesan);
+				System.out.println("Input ID menu yang ingin dihapus: ");
+				tempRemove = sc.nextLine();
+				MenuAkanDipesan.remove(tempRemove);
+				System.out.println("Successfully remove pesanan!");
+			}
+		}while(menu !=3 );
+		for (String menuID : MenuAkanDipesan) {
+	        String insertQuery = "INSERT INTO TransactionDetail (TransactionID, MenuID) VALUES (?, ?)";
+	        try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
+	            preparedStatement.setString(1, transactionID);
+	            preparedStatement.setString(2, menuID);
+	            preparedStatement.setString(3, mejaID);
+	            preparedStatement.executeUpdate();
+	        } catch (SQLException e) {
+	            e.printStackTrace(); // Handle the exception appropriately
+	        }
+	    }
+		
+		try {
+			Statement state = conn.createStatement();
+	        String query = "UPDATE transactionHeader SET status = 'In Order' WHERE transactionID = " + transactionID;
+	        state.executeUpdate(query);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+	}
+	
+	public static void UpdateReservation(Connection conn, String staffID, String branchID, String transactionID) {
+		int menu;
+		do {
+			System.out.print("1. Pesan Menu\n2. Cancel Reservation\n3. Exit\n>> ");
+			menu = sc.nextInt();
+			if(menu == 1) {
+				
+				String mejaID = Find.findMejaID(conn, transactionID);
+				
+				PesanMenu(conn, staffID, branchID, transactionID, mejaID);
+			}
+			else if(menu == 2) {
+				Delete.CancelReservation(conn, staffID, branchID, transactionID);
+			}
+		}while(menu != 3);
+		
 	}
 	
 }

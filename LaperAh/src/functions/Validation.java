@@ -11,7 +11,7 @@ public class Validation {
 	
 	static Scanner sc = new Scanner(System.in);
 	
-	public static List<String> IsInBranch(Connection conn, String branchID, String MenuID) {
+	public static List<String> IsInBranch(Connection conn, String branchID) {
 		String[] allowedMenu = new String[10];
 		try {
 			Statement state = conn.createStatement();
@@ -26,6 +26,26 @@ public class Validation {
 		}
 		
 		List<String> MenuAllowed = Arrays.asList(allowedMenu);
+
+		return MenuAllowed;
+		
+	}
+	
+	public static List<String> GetEmployee(Connection conn) {
+		String[] RegisteredEmployee = new String[10];
+		try {
+			Statement state = conn.createStatement();
+			ResultSet rs = state.executeQuery("SELECT * FROM staffs");
+			int i = 0;
+			while(rs.next()){
+				RegisteredEmployee[i] = rs.getString("StaffID");
+				i++;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		List<String> MenuAllowed = Arrays.asList(RegisteredEmployee);
 
 		return MenuAllowed;
 		
@@ -53,10 +73,6 @@ public class Validation {
 		
 		
 		return false;
-	}
-	
-	public static void AssignMeja(Connection conn, String tipeMeja) {
-		
 	}
 	
 }

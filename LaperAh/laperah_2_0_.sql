@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2024 at 08:16 AM
+-- Generation Time: Jan 08, 2024 at 04:54 PM
 -- Server version: 10.4.17-MariaDB
 -- PHP Version: 8.0.0
 
@@ -70,7 +70,7 @@ INSERT INTO `mejas` (`MejaID`, `TipeMeja`, `Capacity`, `BranchID`, `isoccupied`)
 ('MJ005', 'General', 4, 'BR001', 0),
 ('MJ006', 'Family', 10, 'BR002', 0),
 ('MJ007', 'General', 4, 'BR001', 0),
-('MJ008', 'Romantic', 2, 'BR001', 0);
+('MJ008', 'Romantic', 2, 'BR001', 1);
 
 -- --------------------------------------------------------
 
@@ -94,11 +94,16 @@ CREATE TABLE `menus` (
 --
 
 INSERT INTO `menus` (`MenuID`, `MenuName`, `Tipe`, `BranchID`, `Story`, `Harga`, `terjual`, `lokasiAsal`) VALUES
-('MN001', 'Dish1', 'TypeA', 'BR001', 'Story1', 50, NULL, NULL),
-('MN002', 'Dish2', 'TypeB', 'BR002', 'Story2', 75, NULL, NULL),
-('MN003', 'Dish3', 'TypeC', 'BR003', 'Story3', 100, NULL, NULL),
-('MN004', 'Nas', '', 'BR001', '-', 30, 0, '-'),
-('MN005', 'Mie', 'Special', 'BR001', 'you', 55, 0, '-');
+('MN001', 'Nasi Goreng UwU', 'Special Menu', 'BR001', 'Delicious dish with a unique flavor profile', 50, NULL, NULL),
+('MN002', 'Mie Skibidi', 'Special Menu', 'BR002', 'A savory delight with a perfect blend of ingredients', 75, NULL, NULL),
+('MN003', 'Kwetrawr', 'Special Menu', 'BR003', 'Exquisite culinary creation that will tantalize your taste buds', 100, NULL, NULL),
+('MN004', 'Ketoprak', 'Lokal Special', 'BR004', '-', 30, 0, 'Liyue'),
+('MN005', 'Ayam Venti', 'Lokal Special', 'BR005', '-', 55, 0, 'Mondstat'),
+('MN006', 'Es buah Fontaine', 'Lokal Special', 'BR006', '-', 50, NULL, 'Fontaine'),
+('MN007', 'Nasi Goreng gila', 'Normal', 'BR001', '-', 75, NULL, NULL),
+('MN008', 'Bolu kukus Laplus', 'Normal', 'BR002', '-', 100, NULL, NULL),
+('MN009', 'Indomie', 'Normal', 'BR001', '-', 30, 0, '-'),
+('MN010', 'Bubur', 'Normal', 'BR004', '-', 55, 0, '-');
 
 -- --------------------------------------------------------
 
@@ -132,7 +137,7 @@ INSERT INTO `staffs` (`StaffID`, `StaffName`, `BranchID`) VALUES
 
 CREATE TABLE `transactiondetail` (
   `TransactionID` varchar(5) NOT NULL,
-  `Menu` varchar(255) NOT NULL,
+  `MenuID` varchar(5) NOT NULL,
   `MejaID` varchar(5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -140,10 +145,11 @@ CREATE TABLE `transactiondetail` (
 -- Dumping data for table `transactiondetail`
 --
 
-INSERT INTO `transactiondetail` (`TransactionID`, `Menu`, `MejaID`) VALUES
-('TR001', 'Menu1', 'MJ001'),
-('TR002', 'Menu2', 'MJ002'),
-('TR003', 'Menu3', 'MJ003');
+INSERT INTO `transactiondetail` (`TransactionID`, `MenuID`, `MejaID`) VALUES
+('TR001', 'MN001', 'MJ001'),
+('TR002', 'MN002', 'MJ002'),
+('TR003', 'MN003', 'MJ003'),
+('TR004', 'MN004', 'MJ004');
 
 -- --------------------------------------------------------
 
@@ -163,10 +169,10 @@ CREATE TABLE `transactionheader` (
 --
 
 INSERT INTO `transactionheader` (`TransactionID`, `StaffID`, `CustomerName`, `Status`) VALUES
-('MN005', 'ST001', 'tONO', 'In Reserve'),
 ('TR001', 'ST001', 'Bogo Satoru', 'Completed'),
 ('TR002', 'ST002', 'Frieren', 'DineIn'),
-('TR003', 'ST003', 'Joe dabozo', 'Reservasion');
+('TR003', 'ST003', 'Joe dabozo', 'Reservasion'),
+('TR004', 'ST001', 'Tono', 'In Reserve');
 
 --
 -- Indexes for dumped tables
@@ -202,7 +208,8 @@ ALTER TABLE `staffs`
 -- Indexes for table `transactiondetail`
 --
 ALTER TABLE `transactiondetail`
-  ADD PRIMARY KEY (`TransactionID`,`Menu`);
+  ADD PRIMARY KEY (`TransactionID`,`MenuID`),
+  ADD KEY `FK_transactiondetail_MenuID` (`MenuID`);
 
 --
 -- Indexes for table `transactionheader`
@@ -231,7 +238,7 @@ ALTER TABLE `staffs`
 -- Constraints for table `transactiondetail`
 --
 ALTER TABLE `transactiondetail`
-  ADD CONSTRAINT `transactiondetail_ibfk_1` FOREIGN KEY (`TransactionID`) REFERENCES `transactionheader` (`TransactionID`);
+  ADD CONSTRAINT `FK_transactiondetail_MenuID` FOREIGN KEY (`MenuID`) REFERENCES `menus` (`MenuID`);
 
 --
 -- Constraints for table `transactionheader`

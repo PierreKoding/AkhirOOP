@@ -5,9 +5,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class View {
-	public View() {
-		// TODO Auto-generated constructor stub
-	}
 	
 	public static void ViewMenu(Connection conn, String branchID) {
 		try {

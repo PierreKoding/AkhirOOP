@@ -128,7 +128,7 @@ public class Add {
 			if(totalOrang > maksOrang) {
 				System.out.println("Total pelanggan melebihi kapasitas meja yang dipesan!");
 			}
-			else if(!Validation.MejaAvailibility(conn, tipeMeja, jumlahMeja, staffID)) {
+			if(!Validation.MejaAvailibility(conn, tipeMeja, jumlahMeja, staffID)) {
 				System.out.println("Meja tidak tersedia!");
 			}
 		}while(totalOrang < maksOrang);
@@ -140,10 +140,10 @@ public class Add {
 			ResultSet rs = state.executeQuery("SELECT transactionID FROM transactionHeader");
 			while(rs.next()) {
 				lastID = rs.getString("TransactionID");
-				String numericPart = lastID.substring(3);
+				String numericPart = lastID.substring(2);
                 int numericValue = Integer.parseInt(numericPart);
-                numericValue = numericValue + 2;
-                newID = "MN" + String.format("%03d", numericValue);
+                numericValue = numericValue + 1;
+                newID = "TR" + String.format("%03d", numericValue);
                 
 			}
 		} catch (Exception e) {
@@ -164,8 +164,9 @@ public class Add {
 		}
 		
 		// ASSIGN MEJA
-		try (Statement state = conn.createStatement();
-			     ResultSet rs = state.executeQuery("SELECT * FROM mejas WHERE tipeMeja = '" + tipeMeja + "' AND isOccupied = false AND branchID = '" + branchID + "' ORDER BY MejaID")) {
+		try {
+				Statement state = conn.createStatement();
+				ResultSet rs = state.executeQuery("SELECT * FROM mejas WHERE tipeMeja = '" + tipeMeja + "' AND isOccupied = false AND branchID = '" + branchID + "' ORDER BY MejaID");
 
 			    if (rs.next()) {
 			        String mejaID = rs.getString("MejaID");
@@ -184,9 +185,10 @@ public class Add {
 			            return;
 			        }
 
-			        try (PreparedStatement insertStatement = conn.prepareStatement("INSERT INTO transactionDetail (TransactionID, MejaID) VALUES (?, ?)")) {
+			        try (PreparedStatement insertStatement = conn.prepareStatement("INSERT INTO transactionDetail (TransactionID, Menu, MejaID) VALUES (?, ?, ?)")) {
 			            insertStatement.setString(1, newID);
-			            insertStatement.setString(2, mejaID);
+			            insertStatement.setString(2, "-");
+			            insertStatement.setString(3, mejaID);
 
 			            int rowsInserted = insertStatement.executeUpdate();
 			            if (rowsInserted != 0) {

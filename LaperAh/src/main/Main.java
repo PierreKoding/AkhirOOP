@@ -1,5 +1,6 @@
 package main;
 
+import java.util.List;
 import java.util.Scanner;
 
 import DML.Add;
@@ -21,27 +22,39 @@ public class Main {
 	private static String branchID = null;
 	private static String branchName = null;
 	
-	// BELUM VALIDASI
 	public static void login() {
-		System.out.print("Input your Employee ID >> ");
-		staffID = sc.next();
-		try {
-			Statement state = conn.createStatement();
-			ResultSet rs = state.executeQuery("SELECT * FROM staffs s JOIN branches b ON s.branchID = b.branchID");
-			
-			while(rs.next()){
-				if(staffID.equals(rs.getString("StaffID"))) {
-					branchID = rs.getString("branchID");
-					staffName = rs.getString("staffName");
-					staffID = rs.getString("staffID");
-					branchName = rs.getString("Lokasi");
+		int valid = 0;
+		do {			
+			System.out.print("Input your Employee ID >> ");
+			staffID = sc.next();
+			try {
+				Statement state = conn.createStatement();
+				ResultSet rs = state.executeQuery("SELECT * FROM staffs s JOIN branches b ON s.branchID = b.branchID");
+				
+				while(rs.next()){
+					if(staffID.equals(rs.getString("StaffID"))) {
+						branchID = rs.getString("branchID");
+						staffName = rs.getString("staffName");
+						staffID = rs.getString("staffID");
+						branchName = rs.getString("Lokasi");
+						break;
+					}
+					else {
+					}
+				}
+				List<String> Registered = functions.Validation.GetEmployee(conn);
+				if(Registered.contains(staffID)) {
+					valid = 1;
 				}
 				else {
+					System.out.println("Enter a Valid ID!");
+					valid = 0;
 				}
+				
+			} catch (Exception e) {
+	
 			}
-		} catch (Exception e) {
-
-		}
+		}while(valid == 0);
 	}
 	
 	public static void Menu() {
